@@ -12,15 +12,18 @@ class SlackLogHandler(logging.Handler):
         logging.CRITICAL: ':boom:'
     }
 
-    LOG_FORMAT = '[%(levelname)s] [%(asctime)s] [%(name)s] - %(message)s'
+    DEFAULT_LOG_FORMAT = '[%(levelname)s] [%(asctime)s] [%(name)s] - %(message)s'
 
-    def __init__(self, webhook_url, channel=None, username=None, emojis=None):
+    def __init__(self, webhook_url, channel=None, username=None, emojis=None, log_format=None):
         logging.Handler.__init__(self)
         self.webhook_url = webhook_url
         self.channel = channel
         self.username = username
         self.emojis = emojis if emojis is not None else SlackLogHandler.EMOJIS
-        self.formatter = logging.Formatter(SlackLogHandler.LOG_FORMAT)
+        if log_format:
+            self.formatter=logging.Formatter(log_format)
+        else:
+            self.formatter = logging.Formatter(SlackLogHandler.DEFAULT_LOG_FORMAT)
 
     def _make_content(self, record):
         content = {
